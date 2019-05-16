@@ -21,9 +21,9 @@ def up_conv(in_channels, out_channels):
 class SResUnet(nn.Module):
     '''Shallow Unet with ResNet18 or ResNet34 encoder.
     '''
-    def __init__(self, encoder, in_channels=3, out_channels=2):
+    def __init__(self, encoder, *, pretrained=False, out_channels=2):
         super().__init__()
-        self.encoder = encoder
+        self.encoder = encoder(pretrained=pretrained)
         self.encoder_layers = list(self.encoder.children())
 
         self.block1 = nn.Sequential(*self.encoder_layers[:3])
@@ -44,7 +44,8 @@ class SResUnet(nn.Module):
         self.conv10 = nn.Conv2d(32, out_channels, kernel_size=1)
         self.sigmoid = nn.Sigmoid()
 
-        self._weights_init()
+        if not pretrained:
+            self._weights_init()
 
     def _weights_init(self):
         for m in self.modules():
@@ -87,9 +88,9 @@ class SResUnet(nn.Module):
 class DResUnet(nn.Module):
     '''Deep Unet with ResNet50, ResNet101 or ResNet152 encoder.
     '''
-    def __init__(self, encoder, in_channels=3, out_channels=2):
+    def __init__(self, encoder, *, pretrained=False, out_channels=2):
         super().__init__()
-        self.encoder = encoder
+        self.encoder = encoder(pretrained=pretrained)
         self.encoder_layers = list(self.encoder.children())
 
         self.block1 = nn.Sequential(*self.encoder_layers[:3])
@@ -110,7 +111,8 @@ class DResUnet(nn.Module):
         self.conv10 = nn.Conv2d(32, out_channels, kernel_size=1)
         self.sigmoid = nn.Sigmoid()
 
-        self._weights_init()
+        if not pretrained:
+            self._weights_init()
 
     def _weights_init(self):
         for m in self.modules():
@@ -148,3 +150,10 @@ class DResUnet(nn.Module):
         x = self.sigmoid(x)
 
         return x
+
+
+if __name__ == '__main__':
+    model = DResUnet(resnet101, pretrained=False)
+    t = torch.rand((1, 3, 224, 224))
+    o = model(t)
+    print(o.size())
