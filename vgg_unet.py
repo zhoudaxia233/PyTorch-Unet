@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
-from torchvision import models
+from torchvision.models import vgg13_bn, vgg16_bn
+
+__all__ = ['vgg13bn_unet', 'vgg16bn_unet']
 
 
 def double_conv(in_channels, out_channels):
@@ -21,13 +23,13 @@ def up_conv(in_channels, out_channels):
 
 
 class VGGUnet(nn.Module):
-    """Unet with VGG-13 (with BN) encoder.
+    """Unet with VGG-13 (with BN), VGG-16 (with BN) encoder.
     """
 
-    def __init__(self, out_channels=2, pretrained=False):
+    def __init__(self, encoder, *, pretrained=False, out_channels=2):
         super().__init__()
 
-        self.encoder = models.vgg13_bn(pretrained=pretrained).features
+        self.encoder = encoder(pretrained=pretrained).features
         self.block1 = nn.Sequential(*self.encoder[:6])
         self.block2 = nn.Sequential(*self.encoder[6:13])
         self.block3 = nn.Sequential(*self.encoder[13:20])
@@ -74,3 +76,11 @@ class VGGUnet(nn.Module):
         x = self.sigmoid(x)
 
         return x
+
+
+def vgg13bn_unet(output_dim: int, pretrained: bool=False):
+    return VGGUnet(vgg13_bn, pretrained=pretrained, out_channels=output_dim)
+
+
+def vgg16bn_unet(output_dim: int, pretrained: bool=False):
+    return VGGUnet(vgg16_bn, pretrained=pretrained, out_channels=output_dim)

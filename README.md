@@ -10,7 +10,7 @@ PyTorch1.0 Implementation of Unet
   - ResNet152
 - Unet with VGG encoder
   - VGG13 with BatchNorm
-  - Very easy to be modified into other VGG architectures
+  - VGG16 with BatchNorm
 
 ## Vanilla U-Net architecture
 ![](img/u-net-architecture.png)
