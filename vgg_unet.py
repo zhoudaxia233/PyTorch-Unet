@@ -13,14 +13,17 @@ def double_conv(in_channels, out_channels):
         nn.ReLU(inplace=True)
     )
 
+
 def up_conv(in_channels, out_channels):
     return nn.ConvTranspose2d(
         in_channels, out_channels, kernel_size=2, stride=2
     )
 
+
 class VGGUnet(nn.Module):
-    '''Unet with VGG-13 (with BN) encoder.
-    '''
+    """Unet with VGG-13 (with BN) encoder.
+    """
+
     def __init__(self, out_channels=2, pretrained=False):
         super().__init__()
 
@@ -43,7 +46,7 @@ class VGGUnet(nn.Module):
         self.conv9 = double_conv(128, 64)
         self.conv10 = nn.Conv2d(64, out_channels, kernel_size=1)
         self.sigmoid = nn.Sigmoid()
-    
+
     def forward(self, x):
         block1 = self.block1(x)
         block2 = self.block2(block1)

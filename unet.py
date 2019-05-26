@@ -12,10 +12,12 @@ def double_conv(in_channels, out_channels):
         nn.ReLU(inplace=True)
     )
 
+
 def up_conv(in_channels, out_channels):
     return nn.ConvTranspose2d(
         in_channels, out_channels, kernel_size=2, stride=2
     )
+
 
 class Unet(nn.Module):
     def __init__(self, in_channels=3, out_channels=2):
@@ -37,9 +39,9 @@ class Unet(nn.Module):
         self.conv9 = nn.Conv2d(64, out_channels, kernel_size=1)
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.sigmoid = nn.Sigmoid()
-        
+
         self._weights_init()
-    
+
     def _weights_init(self):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -47,17 +49,17 @@ class Unet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-    
+
     def forward(self, x):
         conv1 = self.conv1(x)
         x = self.maxpool(conv1)
 
         conv2 = self.conv2(x)
         x = self.maxpool(conv2)
-        
+
         conv3 = self.conv3(x)
         x = self.maxpool(conv3)
-        
+
         conv4 = self.conv4(x)
         x = self.maxpool(conv4)
 

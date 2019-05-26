@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet18, resnet34, resnet50, resnet101, resnet152
 
 
 def double_conv(in_channels, out_channels):
@@ -13,14 +12,17 @@ def double_conv(in_channels, out_channels):
         nn.ReLU(inplace=True)
     )
 
+
 def up_conv(in_channels, out_channels):
     return nn.ConvTranspose2d(
         in_channels, out_channels, kernel_size=2, stride=2
     )
 
+
 class SResUnet(nn.Module):
-    '''Shallow Unet with ResNet18 or ResNet34 encoder.
-    '''
+    """Shallow Unet with ResNet18 or ResNet34 encoder.
+    """
+
     def __init__(self, encoder, *, pretrained=False, out_channels=2):
         super().__init__()
         self.encoder = encoder(pretrained=pretrained)
@@ -54,7 +56,7 @@ class SResUnet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-    
+
     def forward(self, x):
         block1 = self.block1(x)
         block2 = self.block2(block1)
@@ -86,8 +88,9 @@ class SResUnet(nn.Module):
 
 
 class DResUnet(nn.Module):
-    '''Deep Unet with ResNet50, ResNet101 or ResNet152 encoder.
-    '''
+    """Deep Unet with ResNet50, ResNet101 or ResNet152 encoder.
+    """
+
     def __init__(self, encoder, *, pretrained=False, out_channels=2):
         super().__init__()
         self.encoder = encoder(pretrained=pretrained)
@@ -121,7 +124,7 @@ class DResUnet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
-    
+
     def forward(self, x):
         block1 = self.block1(x)
         block2 = self.block2(block1)
@@ -150,10 +153,3 @@ class DResUnet(nn.Module):
         x = self.sigmoid(x)
 
         return x
-
-
-if __name__ == '__main__':
-    model = DResUnet(resnet101, pretrained=False)
-    t = torch.rand((1, 3, 224, 224))
-    o = model(t)
-    print(o.size())
