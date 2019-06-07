@@ -44,7 +44,6 @@ class SResUnet(nn.Module):
         self.conv9 = double_conv(64 + 64, 64)
         self.up_conv10 = up_conv(64, 32)
         self.conv10 = nn.Conv2d(32, out_channels, kernel_size=1)
-        self.sigmoid = nn.Sigmoid()
 
         if not pretrained:
             self._weights_init()
@@ -82,7 +81,6 @@ class SResUnet(nn.Module):
 
         x = self.up_conv10(x)
         x = self.conv10(x)
-        x = self.sigmoid(x)
 
         return x
 
@@ -112,7 +110,6 @@ class DResUnet(nn.Module):
         self.conv9 = double_conv(64 + 64, 64)
         self.up_conv10 = up_conv(64, 32)
         self.conv10 = nn.Conv2d(32, out_channels, kernel_size=1)
-        self.sigmoid = nn.Sigmoid()
 
         if not pretrained:
             self._weights_init()
@@ -150,6 +147,5 @@ class DResUnet(nn.Module):
 
         x = self.up_conv10(x)
         x = self.conv10(x)
-        x = self.sigmoid(x)
 
         return x
